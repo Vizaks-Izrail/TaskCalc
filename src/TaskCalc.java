@@ -174,11 +174,11 @@ public class TaskCalc {
         return StringResult;
     }
     public static String constructorElement(int invalue, int repeat) {
-        String ELement = "";
+        String element = "";
         for (int i = 0; i < repeat; i++){
             for (RomanNumerals value : RomanNumerals.values()) {
                 if (invalue == value.value) {
-                    ELement += value.name();
+                    element += value.name();
                     break;
                 }
             }
