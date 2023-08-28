@@ -5,11 +5,11 @@ public class TaskCalc {
     static char CharOperation;
     static int FirstValue, SecondValue;
     static boolean Roman;
-    static enum RomanNumerals{
+    enum RomanNumerals{
         I(1),II(2),III(3),IV(4),V(5),
         VI(6),VII(7),VIII(8),IX(9),X(10),
         XL(40),L(50),XC(90),C(100);
-        private int value;
+        private final int value;
         RomanNumerals (int value){
             this.value = value;
         }
@@ -39,11 +39,17 @@ public class TaskCalc {
         splitArray(arrayString);
         //Проверка являются ли цифры римскими
         checkRoman();
-        //Проверка на целостность чисел
-        if (!Roman)  numberIntegrity();
+        if (!Roman){
+            //Проверка на целостность чисел
+            numberIntegrity();
+            FirstValue = Integer.parseInt(FirstString);
+            SecondValue = Integer.parseInt(SecondString);
+            //Проверка на допуск введеных значений
+            checkValue();
+        }
         Result = operationResult();
 
-       return input;
+       return Result;
     }
     public static String[] splitString(String intext) {
         String[] ArrayValue = new String[] {"", "", ""};
@@ -103,7 +109,7 @@ public class TaskCalc {
         try{
             float FirstCheck  = Float.parseFloat(FirstString);
             float SecondCheck = Float.parseFloat(SecondString);
-            if (!(FirstCheck %2 == 0) || !(SecondCheck %2 == 0)){
+            if (!(FirstCheck %1 == 0) || !(SecondCheck %1 == 0)){
                 System.out.println("ВНИМАНИЕ! Запрещено использовать дробные числа!");
                 System.exit(1);
             }
@@ -113,23 +119,70 @@ public class TaskCalc {
         }
     }
 
-    public static String operationResult() {
-        String Result = null;
-        int ResultCalc = 0;
-        switch (CharOperation){
-            case '+': ResultCalc = FirstValue + SecondValue;
-            case '-': ResultCalc = FirstValue - SecondValue;
-            case '*': ResultCalc = FirstValue * SecondValue;
-            case '/': ResultCalc = FirstValue / SecondValue;
+    public static void checkValue() {
+        if (FirstValue < 0 || SecondValue < 0 || FirstValue > 10 || SecondValue > 10){
+            System.out.println("ВНИМАНИЕ! Разрешаеться использовать цифры от 1 до 10");
+            System.exit(1);
         }
-//        if (Roman) Result = constructorRoman(ResultCalc);
+    }
+
+    public static String operationResult() {
+        String Result;
+        int ResultCalc = 0;
+        switch (CharOperation) {
+            case '+' -> ResultCalc = FirstValue + SecondValue;
+            case '-' -> {
+                ResultCalc = FirstValue - SecondValue;
+                if (Roman && ResultCalc <= 0) {
+                    System.out.println("ВНИМАНИЕ! В римском цифроисчислении нет отрицательных значений и нуля!");
+                    System.exit(1);
+                }
+            }
+            case '*' -> ResultCalc = FirstValue * SecondValue;
+            case '/' -> {
+                try {
+                    ResultCalc = FirstValue / SecondValue;
+                } catch (ArithmeticException e) {
+                    System.out.println("ВНИМАНИЕ! На 0 делить нельзя!");
+                    System.exit(1);
+                }
+            }
+        }
+        if (Roman && ResultCalc != 0) Result = constructorRoman(ResultCalc);
+        else Result = String.valueOf(ResultCalc);
         return Result;
     }
 
-//    public static String constructorRoman(int result) {
-//
-//    }
-//    public static String constructorElement(int invalue, int repeat) {
-//
-//    }
+    public static String constructorRoman(int result) {
+        String StringResult = "";
+        int value;
+        if (result < 11) StringResult = constructorElement(result, 1);
+        else if (result < 100) {
+            String StringElements = String.valueOf(result);
+            for (int i = 0; i < StringElements.length(); i++){
+                value = Character.getNumericValue(StringElements.charAt(i));
+                if (i == 0) {
+                    if (result < 40) StringResult += constructorElement(10, value);
+                    else if (result > 40 && result < 50) StringResult += constructorElement(40, 1);
+                    else if (result > 50 && result < 90) {
+                        StringResult += constructorElement(50, 1);
+                        StringResult += constructorElement(10, value - 5);
+                    } else StringResult += constructorElement(value * 10, 1);
+                }else StringResult += constructorElement(value, 1);
+            }
+        }else StringResult += constructorElement(result, 1);
+        return StringResult;
+    }
+    public static String constructorElement(int invalue, int repeat) {
+        String ELement = "";
+        for (int i = 0; i < repeat; i++){
+            for (RomanNumerals value : RomanNumerals.values()) {
+                if (invalue == value.value) {
+                    ELement += value.name();
+                    break;
+                }
+            }
+        }
+        return ELement;
+    }
 }
