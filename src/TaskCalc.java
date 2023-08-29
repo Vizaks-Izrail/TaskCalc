@@ -42,7 +42,6 @@ public class TaskCalc {
             CalcException errinput = new CalcException("ВНИМАНИЕ! Разрешено использовать арефметические опперации только с 2 эллементами");
             errinput.printStackTrace();
             System.exit(1);
-//            throw new CalcException("ВНИМАНИЕ! Разрешено использовать арефметические опперации только с 2 эллементами");
         }
         //Разделение массива на переменные
         splitArray(arrayString);
@@ -87,7 +86,6 @@ public class TaskCalc {
             CalcException errinput = new CalcException("ВНИМАНИЕ! Разрешено использовать арефметические опперации только с 2 эллементами");
             errinput.printStackTrace();
             System.exit(1);
-//            throw new CalcException("ВНИМАНИЕ! Разрешено использовать арефметические опперации только с 2 эллементами");
         }
         array[1] = String.valueOf(intext.charAt(index));
     }
