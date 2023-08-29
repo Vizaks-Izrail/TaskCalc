@@ -1,5 +1,7 @@
 import java.util.Scanner;
 
+
+
 public class TaskCalc {
     static String FirstString, SecondString;
     static char CharOperation;
@@ -14,7 +16,12 @@ public class TaskCalc {
             this.value = value;
         }
     }
-    public static void main(String[] args) {
+    static class InputException extends Exception{
+        InputException(String notification) {
+            super(notification);
+        }
+    }
+    public static void main(String[] args) throws InputException{
         String inputtext;
         while (true){
             Scanner scan = new Scanner(System.in);
@@ -25,15 +32,14 @@ public class TaskCalc {
             System.out.println("Резултат: " + FinalString);
         }
     }
-    public static String calc(String input){
+    public static String calc(String input) throws InputException{
         String[] arrayString = input.split(" ");
         String Result;
         //Разделение строки при отсутствии пробелов
         if (arrayString.length == 1) arrayString = splitString(input);
         //Проверка на ввод только 2 значений
         if (arrayString.length > 3){
-            System.out.println("ВНИМАНИЕ! Разрешено использовать арефметические опперации только с 2 эллементами");
-            System.exit(1);
+            throw new InputException("ВНИМАНИЕ! Разрешено использовать арефметические опперации только с 2 эллементами");
         }
         //Разделение массива на переменные
         splitArray(arrayString);
@@ -51,7 +57,7 @@ public class TaskCalc {
 
        return Result;
     }
-    public static String[] splitString(String intext) {
+    public static String[] splitString(String intext) throws InputException{
         String[] ArrayValue = new String[] {"", "", ""};
         boolean FindOperation = false;
         for (int i = 0; i < intext.length(); i++){
@@ -69,13 +75,12 @@ public class TaskCalc {
         }
         return ArrayValue;
     }
-    public static void constructionElements(String[] array, String intext, int index) {
+    public static void constructionElements(String[] array, String intext, int index) throws InputException{
         for (int j = 0; j < index; j++)array[0] += intext.charAt(j);
         for (int j = index+1; j < intext.length(); j++)array[2] += intext.charAt(j);
         if(array[1].equals(String.valueOf('+')) || array[1].equals(String.valueOf('-')) ||
                 array[1].equals(String.valueOf('*')) || array[1].equals(String.valueOf('/'))){
-            System.out.println("ВНИМАНИЕ! Разрешено использовать арефметические опперации только с 2 эллементами");
-            System.exit(1);
+            throw new InputException("ВНИМАНИЕ! Разрешено использовать арефметические опперации только с 2 эллементами");
         }
         array[1] = String.valueOf(intext.charAt(index));
     }
@@ -85,7 +90,7 @@ public class TaskCalc {
         SecondString   = inarray[2];
         CharOperation  = inarray[1].charAt(0);
     }
-    public static void checkRoman() {
+    public static void checkRoman() throws InputException{
         boolean FirstCheck = false;
         boolean SecondCheck = false;
         for(RomanNumerals value: RomanNumerals.values()){
@@ -100,33 +105,29 @@ public class TaskCalc {
         }
         //Проверка на одинаковое цифроисчисление
         if ((!FirstCheck && SecondCheck) || (FirstCheck && !SecondCheck)){
-            System.out.println("ВНИМАНИЕ! Разрешено использовать только одинаковое цифроисчисление!");
-            System.exit(1);
+            throw new InputException("ВНИМАНИЕ! Разрешено использовать только одинаковое цифроисчисление!");
         }else if (FirstCheck && SecondCheck) Roman = true;
     }
 
-    public static void numberIntegrity() {
+    public static void numberIntegrity() throws InputException{
         try{
             float FirstCheck  = Float.parseFloat(FirstString);
             float SecondCheck = Float.parseFloat(SecondString);
             if (!(FirstCheck %1 == 0) || !(SecondCheck %1 == 0)){
-                System.out.println("ВНИМАНИЕ! Запрещено использовать дробные числа!");
-                System.exit(1);
+                throw new InputException("ВНИМАНИЕ! Запрещено использовать дробные числа!");
             }
         }catch (NumberFormatException e){
-            System.out.println("ВНИМАНИЕ! Запрещено использовать дробные числа!");
-            System.exit(1);
+            throw new InputException("ВНИМАНИЕ! Запрещено использовать дробные числа!");
         }
     }
 
-    public static void checkValue() {
+    public static void checkValue() throws InputException {
         if (FirstValue < 0 || SecondValue < 0 || FirstValue > 10 || SecondValue > 10){
-            System.out.println("ВНИМАНИЕ! Разрешаеться использовать цифры от 1 до 10");
-            System.exit(1);
+            throw new InputException("ВНИМАНИЕ! Разрешаеться использовать цифры от 1 до 10");
         }
     }
 
-    public static String operationResult() {
+    public static String operationResult() throws InputException{
         String Result;
         int ResultCalc = 0;
         switch (CharOperation) {
@@ -134,8 +135,7 @@ public class TaskCalc {
             case '-' -> {
                 ResultCalc = FirstValue - SecondValue;
                 if (Roman && ResultCalc <= 0) {
-                    System.out.println("ВНИМАНИЕ! В римском цифроисчислении нет отрицательных значений и нуля!");
-                    System.exit(1);
+                    throw new InputException("ВНИМАНИЕ! В римском цифроисчислении нет отрицательных значений и нуля!");
                 }
             }
             case '*' -> ResultCalc = FirstValue * SecondValue;
@@ -143,8 +143,7 @@ public class TaskCalc {
                 try {
                     ResultCalc = FirstValue / SecondValue;
                 } catch (ArithmeticException e) {
-                    System.out.println("ВНИМАНИЕ! На 0 делить нельзя!");
-                    System.exit(1);
+                    throw new InputException("ВНИМАНИЕ! На 0 делить нельзя!");
                 }
             }
         }
